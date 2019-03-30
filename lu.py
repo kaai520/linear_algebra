@@ -31,6 +31,23 @@ def my_plu(A):
         U[j + 1:, j:] -= L[j + 1:, j].reshape(-1, 1) * U[j, j:]
     return P, L, U
 
+def lu_solve(A,b):
+    P,L,U=my_plu(A)
+    Pb=P.dot(b)
+    b_len=len(b)
+    x=np.empty(b_len)
+    # y=np.empty(b_len)
+    # for i in range(b_len):
+    #     y[i]=Pb[i]-np.sum(L[i,:i]*y[:i])
+    # for i in range(b_len-1,-1,-1):
+    #     x[i]=(y[i]-np.sum(U[i,i+1:]*x[i+1:]))/U[i,i]
+
+    # forward substitution and back substitution
+    for i in range(b_len):
+        x[i]=Pb[i]-np.sum(L[i,:i]*x[:i])
+    for i in range(b_len-1,-1,-1):
+        x[i]=(x[i]-np.sum(U[i,i+1:]*x[i+1:]))/U[i,i]
+    return x
 
 def test_lu():
     M=np.random.sample((4,4))
@@ -40,5 +57,16 @@ def test_lu():
     print(l.dot(u))
     print(p.dot(M))
 
+def test_lu_solve():
+    A = [[2, 3, -5],
+         [1, -2, 1],
+         [3, 1, 3]]
+    b = [3, 0, 7]
+    # x=[10/7,1,4/7]
+    print(lu_solve(A, b))
+
 if __name__ =='__main__':
+    print('test lu:')
     test_lu()
+    print('test lu solve')
+    test_lu_solve()
